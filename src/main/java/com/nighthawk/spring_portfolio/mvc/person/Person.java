@@ -1,5 +1,7 @@
 package com.nighthawk.spring_portfolio.mvc.person;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.Period;
 import java.time.ZoneId;
@@ -64,6 +66,11 @@ public class Person {
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private Date dob;
     
+    @Column(unique=false)
+    private int height;
+
+    @Column(unique=false)
+    private int weight;
 
     /* HashMap is used to store JSON for daily "stats"
     "stats": {
@@ -79,11 +86,17 @@ public class Person {
     
 
     // Constructor used when building object from an API
-    public Person(String email, String password, String name, Date dob) {
+    public Person(String email, String password, String name, Date dob, int height, int weight) {
         this.email = email;
         this.password = password;
         this.name = name;
         this.dob = dob;
+        this.height = height;
+        this.weight = weight;
+    }
+
+    public String toString(){
+        return ("{ \"email\": " + this.email + ", " + "\"password\": " + this.password + ", " + "\"name\": " + this.name + ", " + "\"dob\": " + this.dob + " }" );
     }
 
     // A custom getter to return age from dob attribute
@@ -92,6 +105,29 @@ public class Person {
             LocalDate birthDay = this.dob.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
             return Period.between(birthDay, LocalDate.now()).getYears(); }
         return -1;
+    }
+
+    public String getAgeToString(){
+        return ("{ \"name\": " + this.name + " ," + "\"age\": " + this.getAge() + " }" );
+    }
+
+    public int getBmi(){
+        int bmi = (int) ( 703 * this.weight / Math.pow(this.height, 2) );
+        return bmi;
+    }
+
+    public String getBmiToString(){
+        return ("{ \"name\": " + this.name + " ," + "\"bmi\": " + this.getBmi() + " }" );
+    }
+
+    public static void main(String[] args) throws ParseException{
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        Date myDate = sdf.parse("2004-11-01");
+
+        Person allArgsPerson = new Person("akhil@nandhakumar.net", "12345", "Akhil Nandhakumar", myDate, 67, 130 );
+        Person noArgsPerson = new Person();
+        System.out.println(noArgsPerson);
+        System.out.println(allArgsPerson);
     }
 
 }
