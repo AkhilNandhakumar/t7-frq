@@ -85,6 +85,7 @@ public class PersonApiController {
     /*
     POST Aa record by Requesting Parameters from URI
      */
+    @CrossOrigin(origins = {"http://127.0.0.1:4000", "https://akhilnandhakumar.github.io/t7-reunion-project/frq2"})
     @PostMapping( "/post")
     public ResponseEntity<Object> postPerson(@RequestParam("email") String email,
                                              @RequestParam("password") String password,
