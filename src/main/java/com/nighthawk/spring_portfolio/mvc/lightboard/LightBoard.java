@@ -5,14 +5,16 @@ import lombok.Data;
 @Data  // Annotations to simplify writing code (ie constructors, setters)
 public class LightBoard {
     private Light[][] lights;
-
+    private boolean[][] lightson;
     /* Initialize LightBoard and Lights */
     public LightBoard(int numRows, int numCols) {
         this.lights = new Light[numRows][numCols];
+        this.lightson = new boolean [numRows][numCols];
         // 2D array nested loops, used for initialization
         for (int row = 0; row < numRows; row++) {
             for (int col = 0; col < numCols; col++) {
                 lights[row][col] = new Light();  // each cell needs to be constructed
+                lightson[row][col] = true;
             }
         }
     }
@@ -28,6 +30,7 @@ public class LightBoard {
                 "{" + 
                 "\"row\": " + row + "," +
                 "\"column\": " + col + "," +
+                "\"On\": " + lightson[row][col] + "," +
                 "\"light\": " + lights[row][col] +   // extract toString data
                 "}," ;
             }
@@ -35,6 +38,14 @@ public class LightBoard {
         // remove last comma, newline, add square bracket, reset color
         outString = outString.substring(0,outString.length() - 1) + "]";
 		return outString;
+    }
+
+    public boolean turnOff(int row, int col){
+    if(lightson[row][col] == true)
+    {
+        lightson[row][col] = false;
+    }
+    return lightson[row][col];
     }
 
     /* Output is intended for Terminal, effects added to output */
@@ -56,6 +67,8 @@ public class LightBoard {
                 // data, extract custom getters
                 "{" +
                 "\"" + "RGB\": " + "\"" + lights[row][col].getRGB() + "\"" +
+                "," +
+                "\"" + "On\": " + "\"" + lightson[row][col] + "\"" +
                 "," +
                 "\"" + "Effect\": " + "\"" + lights[row][col].getEffectTitle() + "\"" +
                 "}," +
@@ -84,6 +97,7 @@ public class LightBoard {
                 for (int col = 0; col < lights[row].length; col++) {
                     // repeat each column for block size
                     for (int j = 0; j < COLS; j++) {
+                        if (lightson[row][col]){
                         // print single character, except at midpoint print color code
                         String c = (i == (int) (ROWS / 2) && j == (int) (COLS / 2) ) 
                             ? lights[row][col].getRGB()
@@ -107,6 +121,8 @@ public class LightBoard {
 
                         // reset
                         "\033[m";
+                        }
+
                     }
                 }
                 outString += "\n";
@@ -116,10 +132,14 @@ public class LightBoard {
         outString += "\033[m";
 		return outString;
     }
+
+
     
     static public void main(String[] args) {
         // create and display LightBoard
         LightBoard lightBoard = new LightBoard(5, 5);
+        lightBoard.turnOff(2, 2);
+        lightBoard.turnOff(3, 1);
         System.out.println(lightBoard);  // use toString() method
         System.out.println(lightBoard.toTerminal());
         System.out.println(lightBoard.toColorPalette());
